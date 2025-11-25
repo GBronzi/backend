@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "title": "Teclado",
+    "description": "Teclado inalambrico",
+    "code": "Tec0001",
+    "price": 85000,
+    "status": true,
+    "stock": 10,
+    "category": "Perifericos",
+    "thumbnails": []
+  }
+]

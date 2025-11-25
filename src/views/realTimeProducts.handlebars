@@ -1,0 +1,55 @@
+<div class="realtime-section">
+    <h2 style="color: #333; margin-bottom: 20px;">Productos</h2>
+    
+    <!-- Formulario para agregar productos -->
+    <div class="form-container">
+        <h3>Agregar Nuevo Producto</h3>
+        <form id="addProductForm">
+            <div class="form-row">
+                <input type="text" id="title" placeholder="Título" required>
+                <input type="text" id="description" placeholder="Descripción" required>
+            </div>
+            <div class="form-row">
+                <input type="text" id="code" placeholder="Código (ej: PROD001)" required>
+                <input type="number" id="price" placeholder="Precio" step="0.01" required>
+            </div>
+            <div class="form-row">
+                <input type="number" id="stock" placeholder="Stock" required>
+                <input type="text" id="category" placeholder="Categoría" required>
+            </div>
+            <button type="submit" class="btn-add">Agregar Producto</button>
+        </form>
+    </div>
+
+    <!-- Lista de productos -->
+    <div id="productsList" class="products-grid">
+        {{#if products.length}}
+            {{#each products}}
+                <div class="product-card" data-id="{{this.id}}">
+                    <h3>{{this.title}}</h3>
+                    <p>{{this.description}}</p>
+                    <div class="price">${{this.price}}</div>
+                    <div>
+                        <span class="badge badge-code">Código: {{this.code}}</span>
+                        <span class="badge badge-category">{{this.category}}</span>
+                        <span class="badge badge-stock">Stock: {{this.stock}}</span>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        <strong>ID:</strong> {{this.id}}
+                    </p>
+                    <button class="btn-delete" onclick="deleteProduct({{this.id}})">🗑️ Eliminar</button>
+                </div>
+            {{/each}}
+        {{else}}
+            <div class="empty-message">
+                <p>No hay productos disponibles</p>
+                <p style="font-size: 0.9em; margin-top: 10px;">Agrega un producto usando el formulario</p>
+            </div>
+        {{/if}}
+    </div>
+</div>
+
+<link rel="stylesheet" href="/realtime.css">
+<script src="/socket.io/socket.io.js"></script>
+<script src="/realtime.js"></script>
+

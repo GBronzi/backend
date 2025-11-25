@@ -1,0 +1,30 @@
+<div class="products-section">
+    <h2 style="color: #333; margin-bottom: 20px;">Lista de Productos</h2>
+    
+    <!-- Detalles del producto -->
+    {{#if products.length}}
+        <div class="products-grid">
+            {{#each products}}
+                <div class="product-card">
+                    <h3>{{this.title}}</h3>
+                    <p>{{this.description}}</p>
+                    <div class="price">${{this.price}}</div>
+                    <div>
+                        <span class="badge badge-code">Código: {{this.code}}</span>
+                        <span class="badge badge-category">{{this.category}}</span>
+                        <span class="badge badge-stock">Stock: {{this.stock}}</span>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9em;">
+                        <strong>ID:</strong> {{this.id}}
+                    </p>
+                </div>
+            {{/each}}
+        </div>
+    {{else}}
+        <div class="empty-message">
+            <p>No hay productos disponibles</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Usa la API para agregar productos</p>
+        </div>
+    {{/if}}
+</div>
+

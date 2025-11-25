@@ -1,0 +1,25 @@
+{
+  "name": "entrega-backend",
+  "version": "2.0.0",
+  "description": "Servidor con Express, Handlebars y WebSockets para gestionar productos y carritos en tiempo real",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "keywords": [
+    "express",
+    "backend",
+    "ecommerce",
+    "websockets",
+    "handlebars",
+    "realtime"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-handlebars": "^8.0.2",
+    "socket.io": "^4.8.1"
+  }
+}
