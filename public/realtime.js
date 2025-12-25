@@ -68,7 +68,7 @@ socket.on('updateProducts', (prods) => {
         `;
     } else {
         productsList.innerHTML = prods.map(p => `
-            <div class="product-card" data-id="${p.id}">
+            <div class="product-card" data-id="${p._id}">
                 <h3>${p.title}</h3>
                 <p>${p.description}</p>
                 <div class="price">$${p.price}</div>
@@ -78,8 +78,8 @@ socket.on('updateProducts', (prods) => {
                     <span class="badge badge-stock">Stock: ${p.stock}</span>
                 </div>
                 <p style="margin-top: 10px; font-size: 0.9em;">
-                    <strong>ID:</strong> ${p.id}</p>
-                <button class="btn-delete" onclick="deleteProduct(${p.id})">🗑️ Eliminar</button>
+                    <strong>ID:</strong> ${p._id}</p>
+                <button class="btn-delete" onclick="deleteProduct('${p._id}')">🗑️ Eliminar</button>
             </div>
         `).join('');
     }

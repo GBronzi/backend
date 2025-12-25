@@ -1,11 +1,12 @@
 {
   "name": "entrega-backend",
-  "version": "2.0.0",
-  "description": "Servidor con Express, Handlebars y WebSockets para gestionar productos y carritos en tiempo real",
+  "version": "3.0.0",
+  "description": "Servidor con Express, MongoDB Atlas, Mongoose y WebSockets - Arquitectura MVC + DAO + Service",
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "dev": "node src/app.js"
   },
   "keywords": [
     "express",
@@ -20,6 +21,8 @@
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^8.0.2",
+    "mongoose": "^9.0.2",
+    "mongoose-paginate-v2": "^1.9.1",
     "socket.io": "^4.8.1"
   }
 }

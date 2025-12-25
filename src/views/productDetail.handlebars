@@ -1,0 +1,117 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{product.title}}</h2>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Descripción:</h5>
+                            <p>{{product.description}}</p>
+                            
+                            <h5>Detalles:</h5>
+                            <ul>
+                                <li><strong>Código:</strong> {{product.code}}</li>
+                                <li><strong>Categoría:</strong> {{product.category}}</li>
+                                <li><strong>Stock disponible:</strong> {{product.stock}} unidades</li>
+                                <li><strong>Estado:</strong> 
+                                    {{#if product.status}}
+                                        <span class="badge bg-success">Disponible</span>
+                                    {{else}}
+                                        <span class="badge bg-danger">No disponible</span>
+                                    {{/if}}
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h3 class="text-primary">${{product.price}}</h3>
+                                
+                                <div class="mt-4">
+                                    <label for="cantidad">Cantidad:</label>
+                                    <input type="number" id="cantidad" class="form-control" value="1" min="1" max="{{product.stock}}">
+                                </div>
+                                
+                                <button class="btn btn-success btn-lg mt-3" onclick="agregarAlCarrito()">
+                                    Agregar al carrito
+                                </button>
+                                
+                                <a href="/products" class="btn btn-secondary btn-lg mt-3">
+                                    Volver a productos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // crear carrito si no existe
+    async function crearCarrito() {
+        let cartId = localStorage.getItem('cartId');
+
+        if (!cartId) {
+            try {
+                const response = await fetch('/api/carts', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                cartId = data.data._id;
+                localStorage.setItem('cartId', cartId);
+                console.log('carrito creado:', cartId);
+            } catch (error) {
+                console.error('error al crear carrito:', error);
+            }
+        }
+
+        return cartId;
+    }
+
+    // agregar producto al carrito
+    async function agregarAlCarrito() {
+        const cantidad = parseInt(document.getElementById('cantidad').value);
+        const productId = '{{product._id}}';
+
+        const cartId = await crearCarrito();
+
+        if (!cartId) {
+            Swal.fire('Error', 'No se pudo crear el carrito', 'error');
+            return;
+        }
+
+        try {
+            // agregar producto varias veces segun la cantidad
+            for (let i = 0; i < cantidad; i++) {
+                await fetch(`/api/carts/${cartId}/product/${productId}`, {
+                    method: 'POST'
+                });
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Producto agregado',
+                text: `Se agregaron ${cantidad} unidad(es) al carrito`,
+                showConfirmButton: true,
+                confirmButtonText: 'Ver carrito',
+                showCancelButton: true,
+                cancelButtonText: 'Seguir comprando'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/carts/' + cartId;
+                }
+            });
+
+        } catch (error) {
+            console.error('error:', error);
+            Swal.fire('Error', 'No se pudo agregar el producto', 'error');
+        }
+    }
+</script>
+

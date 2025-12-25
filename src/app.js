@@ -4,45 +4,61 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-import productsRouter from './routes/products.router.js';
-import cartsRouter from './routes/carts.router.js';
+import mongoose from 'mongoose';
+import routes from '../routes/index.js';
+import productService from '../services/productService.js';
 import viewsRouter from './routes/views.router.js';
-import ProductManager from './managers/ProductManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
+
+// conexion a mongodb
+mongoose
+.connect('mongodb+srv://gbronzi91_db_user:t7XHxcZ5mKvNt280@cluster0.v9srikr.mongodb.net/ProductosGbronzi?retryWrites=true&w=majority')
+.then(() => console.log('conectado a mongodb'))
+.catch((err) => console.error('error al conectar a mongodb:', err));
 
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
-app.engine('handlebars', engine());
+// configuracion handlebars con helpers
+app.engine('handlebars', engine({
+    helpers: {
+        multiply: (a, b) => a * b
+    },
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+// middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.set('io', io);
 
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+// rutas api con arquitectura MVC + DAO + Service
+app.use('/api', routes);
+
+// rutas de vistas (handlebars)
 app.use('/', viewsRouter);
 
-const productManager = new ProductManager('./data/products.json');
-
+// websockets para tiempo real
 io.on('connection', (socket) => {
     console.log('cliente conectado');
 
     // agregar producto
     socket.on('addProduct', async (data) => {
         try {
-            await productManager.addProduct(data);
-            const prods = await productManager.getProducts();
+            await productService.createProduct(data);
+            const prods = await productService.getAllProducts();
             io.emit('updateProducts', prods);
         } catch (error) {
             console.log('error al agregar:', error.message);
@@ -53,8 +69,8 @@ io.on('connection', (socket) => {
     // borrar producto
     socket.on('deleteProduct', async (id) => {
         try {
-            await productManager.deleteProduct(id);
-            const prods = await productManager.getProducts();
+            await productService.deleteProduct(id);
+            const prods = await productService.getAllProducts();
             io.emit('updateProducts', prods);
         } catch (error) {
             socket.emit('error', error.message);

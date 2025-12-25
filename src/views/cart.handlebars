@@ -1,0 +1,173 @@
+<div class="container mt-4">
+    <h1>Carrito de Compras</h1>
+    <p class="text-muted">ID del carrito: {{cart._id}}</p>
+
+    {{#if cart.products}}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cart.products}}
+                        <tr>
+                            <td>{{this.product.title}}</td>
+                            <td>{{this.product.description}}</td>
+                            <td>${{this.product.price}}</td>
+                            <td>{{this.quantity}}</td>
+                            <td>${{multiply this.product.price this.quantity}}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarProducto('{{this.product._id}}')">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 offset-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Resumen del carrito</h4>
+                        <hr>
+                        <p><strong>Total de productos:</strong> {{cart.products.length}}</p>
+                        <h3 class="text-primary">Total: $<span id="total">0</span></h3>
+                        
+                        <button class="btn btn-primary btn-lg w-100 mt-3">
+                            Finalizar compra
+                        </button>
+                        
+                        <button class="btn btn-danger w-100 mt-2" onclick="vaciarCarrito()">
+                            Vaciar carrito
+                        </button>
+                        
+                        <a href="/products" class="btn btn-secondary w-100 mt-2">
+                            Seguir comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{else}}
+        <div class="alert alert-info">
+            <h4>El carrito está vacío</h4>
+            <p>No hay productos en tu carrito.</p>
+            <a href="/products" class="btn btn-primary">Ir a productos</a>
+        </div>
+    {{/if}}
+</div>
+
+<script>
+    const cartId = '{{cart._id}}';
+
+    // calcular total
+    function calcularTotal() {
+        let total = 0;
+        {{#each cart.products}}
+            total += {{this.product.price}} * {{this.quantity}};
+        {{/each}}
+        document.getElementById('total').textContent = total.toFixed(2);
+    }
+
+    // eliminar producto del carrito
+    async function eliminarProducto(productId) {
+        console.log('intentando eliminar producto:', productId);
+        console.log('del carrito:', cartId);
+
+        const confirmacion = await Swal.fire({
+            title: '¿Eliminar producto?',
+            text: '¿Estás seguro de eliminar este producto del carrito?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirmacion.isConfirmed) {
+            try {
+                const url = `/api/carts/${cartId}/product/${productId}`;
+                console.log('URL de eliminación:', url);
+
+                const response = await fetch(url, {
+                    method: 'DELETE'
+                });
+
+                console.log('respuesta del servidor:', response.status);
+                const data = await response.json();
+                console.log('datos:', data);
+
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Producto eliminado',
+                        text: 'El producto se eliminó del carrito',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('error:', error);
+                Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
+            }
+        } else {
+            console.log('eliminación cancelada');
+        }
+    }
+
+    // vaciar carrito completo
+    async function vaciarCarrito() {
+        const confirmacion = await Swal.fire({
+            title: '¿Vaciar carrito?',
+            text: '¿Estás seguro de eliminar todos los productos?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, vaciar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirmacion.isConfirmed) {
+            try {
+                const response = await fetch(`/api/carts/${cartId}/clear`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Carrito vaciado',
+                        text: 'Se eliminaron todos los productos',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('error:', error);
+                Swal.fire('Error', 'No se pudo vaciar el carrito', 'error');
+            }
+        }
+    }
+
+    // calcular total al cargar
+    calcularTotal();
+</script>
+

@@ -1,6 +1,6 @@
-# Proyecto Backend - Productos y Carritos
+# Proyecto Backend - E-commerce
 
-Servidor con Node.js, Express, Handlebars y WebSockets
+Sistema de productos y carritos con Node.js, Express, MongoDB y WebSockets
 
 ## Instalación
 
@@ -11,65 +11,64 @@ npm start
 
 Servidor: `http://localhost:8080`
 
-## Estructura
+## Tecnologías
+
+- Node.js + Express
+- MongoDB Atlas + Mongoose
+- Handlebars
+- Socket.io
+- Bootstrap 5
+- SweetAlert2
+
+## Estructura del Proyecto
 
 ```
 src/
-├── managers/
-│   ├─ ProductManager.js
-│   └─ CartManager.js
-├── routes/
-│   ├─ products.router.js
-│   ├─ carts.router.js
-│   └─ views.router.js
-├── views/
+├── app.js              
+├── views/              
 │   ├── layouts/
-│   │   └─ main.handlebars
-│   ├─ home.handlebars
-│   └─ realTimeProducts.handlebars
-└── app.js
-data/
-├── products.json
-└── carts.json
+│   ├── products.handlebars
+│   ├── productDetail.handlebars
+│   ├── cart.handlebars
+│   └── realTimeProducts.handlebars
+routes/
+├── productRoutes.js    
+├── cartRoutes.js       
+└── viewsRoutes.js     
+controllers/
+├── productController.js
+└── cartController.js
+services/
+├── productService.js
+└── cartService.js
+dao/
+├── productDao.js
+└── cartDao.js
+models/
+├── product.model.js
+└── cart.model.js
 public/
 ├── styles.css
 ├── realtime.css
 └── realtime.js
 ```
 
+
 ## Vistas
 
-- `/` - Lista de productos
-- `/realtimeproducts` - Productos en tiempo real
-
-Ejemplo:
-```json
-{
-  "title": "Producto",
-  "description": "Descripción",
-  "code": "ABC123",
-  "price": 100,
-  "stock": 50,
-  "category": "Categoría"
-}
-```
+- `/` - Inicio
+- `/products` - Lista de productos con paginación
+- `/products/:pid` - Detalle del producto
+- `/carts/:cid` - Vista del carrito
+- `/realtimeproducts` - Productos en tiempo real (agregar/eliminar)
 
 ## Funcionalidades
 
-- CRUD de productos
-- Gestión de carritos
-- Persistencia en JSON
-- Handlebars para vistas
-- WebSockets con Socket.io
-- Actualización en tiempo real
-- SweetAlert2 para alertas
-- Archivos estáticos en public
-
-## Tecnologías
-
-- Node.js
-- Express
-- Handlebars
-- Socket.io
-- SweetAlert2
-
+✅ CRUD completo de productos
+✅ Gestión de carritos
+✅ Paginación y filtros
+✅ Persistencia en MongoDB
+✅ Actualización en tiempo real con WebSockets
+✅ Carrito funcional con localStorage
+✅ Alertas con SweetAlert2
+✅ Diseño responsive con Bootstrap
